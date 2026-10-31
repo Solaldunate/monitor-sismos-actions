@@ -1,0 +1,56 @@
+name: Sismos - CI y CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sismos-pages
+  cancel-in-progress: false
+
+jobs:
+  verificar:
+    name: CI - Probar, descargar y generar
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v6
+      - name: Preparar Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Ejecutar pruebas sin internet
+        run: python -m unittest discover -v
+      - name: Descargar CSV actualizado del USGS
+        run: python descargar.py
+      - name: Validar y generar informe
+        run: python analizar.py
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+      - name: Guardar informe para publicar
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+
+  publicar:
+    name: CD - Publicar informe
+    needs: verificar
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publicar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
