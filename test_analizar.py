@@ -22,7 +22,7 @@ class TestSismos(unittest.TestCase):
 
     def test_calculo_conocido(self):
         resultado = self.procesar(EJEMPLO)
-        self.assertEqual(resultado["cantidad"], 3)
+        self.assertEqual(resultado["cantidad"], 999)
         self.assertEqual(resultado["maxima"], 4.5)
         self.assertEqual(resultado["eventos"][0]["id"], "c")
         self.assertEqual(resultado["por_fecha"], {"2026-01-01": 1, "2026-01-02": 2})

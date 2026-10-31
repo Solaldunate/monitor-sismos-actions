@@ -9,7 +9,7 @@ from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-TITULO = "Monitor de sismos recientes"
+TITULO = "Monitor de sismos recientes - Informe actualizado"
 OBLIGATORIAS = {"time", "mag", "place", "id", "type"}
 
 def fecha_utc(texto):
